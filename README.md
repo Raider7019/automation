@@ -1,3 +1,3 @@
 # automation
 # 
-# Automation scripts for various tasks Terra
+# Automation scripts for various tasks Terra Classic related
