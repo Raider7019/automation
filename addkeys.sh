@@ -1,0 +1,36 @@
+#!/bin/bash
+# addkeys.sh
+# Requires jq commandline JSON parser 
+# sudo apt install jq
+
+NODEROOT="$HOME/.terra"
+NODENAME="test-node"
+PASSPHRASE="12345678"
+
+# Determine if keys for this node already exist
+if [ -f "$NODEROOT/$NODENAME.info" ]
+then
+    echo "Keys for $NODENAME are already present in $NODEROOT"
+else
+    # Create the validator node keys and wallet address and capture the output as a JSON string
+    JDATA=`(printf "%s\n" "$PASSPHRASE" | terrad keys add "$NODENAME" --output json)`
+
+    # Dump the full JSON to stdout only for demonstration purposes
+    echo $JDATA | jq
+
+    # Parse the main JSON output
+    read type address pubkey seed < <(echo $(echo $JDATA | jq --raw-output '.type, .address, .pubkey, .mnemonic'))
+
+    # Parse the pubkey JSON output
+    read kt kv < <(echo $(echo $pubkey | jq '.["@type"], .key'))
+
+    # Trim redundant quotation marks from the pubkey and keytype
+    KEYTYPE=`echo $kt | tr -d '"'`
+    KEY=`echo $kv | tr -d '"'`
+
+    echo "Type: $type"
+    echo "Address: $address"
+    echo "Key type: $KEYTYPE"
+    echo "Key: $KEY"
+    echo "Seed phrase: $seed"
+fi

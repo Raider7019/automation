@@ -1,0 +1,46 @@
+#!/bin/bash
+
+if [ -z "$OPATH" ]
+then
+    # Store the default path
+    export OPATH=$PATH
+else
+    # Reset the path to default
+    export PATH=$OPATH
+fi
+
+# Set the location of the go installation
+export GOROOT=/usr/local/go-1.18.3
+
+if [ -z "$1" ]
+then
+    echo "Usage: . setenv <repo-name>"
+else
+    case "$1" in
+        money)
+        # Setup the environment for terra-money repo
+        export PATH=$GOROOT/bin:$PATH
+        export PROJPATH=$HOME/terra/money
+        export GOPATH=$PROJPATH/go
+        export PATH=$PATH:$PROJPATH/go/bin
+        ;;
+
+        rebels)
+        # Setup the environment for terra-rebels repo
+        export PATH=$GOROOT/bin:$PATH
+        export PROJPATH=$HOME/terra/rebels
+        export GOPATH=$PROJPATH/go
+        export PATH=$PATH:$PROJPATH/go/bin
+        ;;
+
+        *)
+        echo "Unknown project repo $1"
+        ;;
+    esac 
+
+    # Set the repo's build/install bin location
+    export GOBIN=$GOPATH/bin
+
+    # Change working directory to the chosen repo
+    cd $PROJPATH/classic-core
+fi
